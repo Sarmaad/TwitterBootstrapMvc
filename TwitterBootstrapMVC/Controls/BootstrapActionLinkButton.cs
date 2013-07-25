@@ -189,15 +189,15 @@ namespace TwitterBootstrapMVC.Controls
                 mergedHtmlAttributes.AddIfNotExist("data-toggle", "dropdown");
             }
             if (_model.disabled) mergedHtmlAttributes.AddOrMergeCssClass("class", "disabled");
+            if (!string.IsNullOrEmpty(_model.loadingText)) mergedHtmlAttributes.AddOrReplace("data-loading-text", _model.loadingText);
             if (!string.IsNullOrWhiteSpace(_title)) mergedHtmlAttributes.Add("title", _title);
-
 
             var input = string.Empty;
             if (_model.iconPrepend != Icons._not_set || _model.iconAppend != Icons._not_set || !string.IsNullOrEmpty(_model.iconPrependCustomClass) || !string.IsNullOrEmpty(_model.iconAppendCustomClass))
             {
+                var iPrependString = string.Empty;
+                var iAppendString = string.Empty;
 
-                string iPrependString = string.Empty;
-                string iAppendString = string.Empty;
                 if (_model.iconPrepend != Icons._not_set) iPrependString = new BootstrapIcon(_model.iconPrepend, _model.iconPrependIsWhite).ToHtmlString();
                 if (_model.iconAppend != Icons._not_set) iAppendString = new BootstrapIcon(_model.iconAppend, _model.iconAppendIsWhite).ToHtmlString();
                 if (!string.IsNullOrEmpty(_model.iconPrependCustomClass))
@@ -210,17 +210,17 @@ namespace TwitterBootstrapMVC.Controls
                 {
                     var i = new TagBuilder("i");
                     i.AddCssClass(_model.iconAppendCustomClass);
-                    iPrependString = i.ToString(TagRenderMode.Normal);
+                    iAppendString = i.ToString(TagRenderMode.Normal);
                 }
 
-                string combined =
+                var combined = 
                     iPrependString +
                     (!string.IsNullOrEmpty(iPrependString) && (!string.IsNullOrEmpty(_model.text) || !string.IsNullOrEmpty(iAppendString)) ? " " : "") +
                     _model.text +
                     (!string.IsNullOrEmpty(iAppendString) && (!string.IsNullOrEmpty(_model.text) || !string.IsNullOrEmpty(iPrependString)) ? " " : "") +
                     iAppendString;
 
-                string holder = Guid.NewGuid().ToString();
+                var holder = Guid.NewGuid().ToString();
 
                 input = GenerateActionLink(holder, mergedHtmlAttributes);
                 input = input.Replace(holder, combined);
@@ -235,8 +235,8 @@ namespace TwitterBootstrapMVC.Controls
 
         private string GenerateActionLink(string linkText, IDictionary<string, object> htmlAttributes)
         {
-            string input = string.Empty;
-            switch (this._actionTypePassed)
+            var input = string.Empty;
+            switch (_actionTypePassed)
             {
                 case ActionTypePassed.HtmlRegular:
                     input = html.ActionLink(linkText, _actionName, _controllerName, _protocol, _hostName, _fragment, _routeValues, htmlAttributes).ToHtmlString();
@@ -255,8 +255,6 @@ namespace TwitterBootstrapMVC.Controls
                     break;
                 case ActionTypePassed.AjaxTaskResult:
                     input = ajax.ActionLink(linkText, _taskResult, _ajaxOptions, htmlAttributes).ToHtmlString();
-                    break;
-                default:
                     break;
             }
             return input;

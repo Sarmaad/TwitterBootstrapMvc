@@ -1,42 +1,73 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using TwitterBootstrapMVC.Infrastructure;
 
 namespace TwitterBootstrapMVC
 {
     public class Nav : HtmlElement
     {
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public bool _activeLinksByController;
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public bool _activeLinksByControllerAndAction;
+
         public Nav()
             : base("ul")
         {
-            EnsureClass("nav nav-tabs");
+            EnsureClass("nav");
         }
 
         public Nav Style(NavType type)
         {
-            EnsureClassRemoval("nav-tabs");
             switch (type)
             {
                 case NavType.Tabs:
                     EnsureClass("nav-tabs");
                     break;
                 case NavType.Pills:
-                    EnsureClass("bav-pills");
+                    EnsureClass("nav-pills");
                     break;
                 case NavType.List:
                     EnsureClass("nav-list");
                     break;
-                default:
-                    break;
             }
+            return this;
+        }
+
+        public Nav Id(string id)
+        {
+            MergeHtmlAttribute("id", id);
             return this;
         }
 
         public Nav Stacked()
         {
             EnsureClass("nav-stacked");
+            return this;
+        }
+
+        public Nav SetLinksActiveByController()
+        {
+            _activeLinksByController = true;
+            return this;
+        }
+
+        public Nav SetLinksActiveByControllerAndAction()
+        {
+            _activeLinksByControllerAndAction = true;
+            return this;
+        }
+
+        public Nav HtmlAttributes(IDictionary<string, object> htmlAttributes)
+        {
+            SetHtmlAttributes(htmlAttributes);
+            return this;
+        }
+
+        public Nav HtmlAttributes(object htmlAttributes)
+        {
+            SetHtmlAttributes(htmlAttributes);
             return this;
         }
     }
