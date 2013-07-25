@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
+﻿using System.ComponentModel;
 using TwitterBootstrapMVC.Infrastructure;
 
 namespace TwitterBootstrapMVC
@@ -12,10 +8,28 @@ namespace TwitterBootstrapMVC
         [EditorBrowsable(EditorBrowsableState.Never)]
         public string _actionText;
 
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public bool _activeLinksByController;
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public bool _activeLinksByControllerAndAction;
+
         public DropDown(string actionText)
             : base(null)
         {
-            this._actionText = actionText;
+            _actionText = actionText;
+        }
+
+        public DropDown SetLinksActiveByController()
+        {
+            _activeLinksByController = true;
+            return this;
+        }
+
+        public DropDown SetLinksActiveByControllerAndAction()
+        {
+            _activeLinksByControllerAndAction = true;
+            return this;
         }
     }
 }

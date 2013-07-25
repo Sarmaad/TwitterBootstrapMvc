@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Web.Mvc;
 using TwitterBootstrapMVC.Infrastructure;
 
@@ -11,26 +9,28 @@ namespace TwitterBootstrapMVC.Controls
     public class TabsBuilder<TModel> : BuilderBase<TModel, Tabs>
     {
         private int _tabIndex;
-        private Queue<string> _tabIds;
+        private int _panelIndex;
+        private readonly Queue<string> _tabIds;
         private bool _isFirstTab = true;
-        private string _activeTabId;
+        private int _activeTabIndex;
         private bool _isHeaderClosed;
 
         internal TabsBuilder(HtmlHelper<TModel> htmlHelper, Tabs tabs)
             : base(htmlHelper, tabs)
         {
             _tabIndex = 1;
-            this._tabIds = new Queue<string>();
-            switch (base.element.Type)
+            _activeTabIndex = element._activeTabIndex;
+            _tabIds = new Queue<string>();
+            switch (element.Type)
             {
                 case NavType.Pills:
-                    base.textWriter.Write(@"<ul class=""nav nav-pills"">");
+                    textWriter.Write(@"<ul class=""nav nav-pills"">");
                     break;
                 case NavType.List:
-                    base.textWriter.Write(@"<ul class=""nav nav-list"">");
+                    textWriter.Write(@"<ul class=""nav nav-list"">");
                     break;
                 default:
-                    base.textWriter.Write(@"<ul class=""nav nav-tabs"">");
+                    textWriter.Write(@"<ul class=""nav nav-tabs"">");
                     break;
             }
         }
@@ -40,18 +40,18 @@ namespace TwitterBootstrapMVC.Controls
             if (string.IsNullOrWhiteSpace(label))
                 throw new ArgumentNullException("label");
 
-            string tabId = base.element._id + "-" + _tabIndex;
-            this._tabIds.Enqueue(tabId);
+            var tabId = base.element._id + "-" + _tabIndex;
+            _tabIds.Enqueue(tabId);
             
             if (_isFirstTab)
             {
-                _activeTabId = tabId;
-                this.WriteTab(label, "#" + tabId, true);
+                if (_activeTabIndex == 0) _activeTabIndex = 1;
+                WriteTab(label, tabId, _tabIndex == _activeTabIndex);
                 _isFirstTab = false;
             }
             else
             {
-                this.WriteTab(label, "#" + tabId, false);
+                WriteTab(label, tabId, _tabIndex == _activeTabIndex);
             }
 
             _tabIndex++;
@@ -59,21 +59,22 @@ namespace TwitterBootstrapMVC.Controls
 
         public TabsPanel BeginPanel()
         {
-            if (!this._isHeaderClosed)
+            _panelIndex++;
+            if (!_isHeaderClosed)
             {
-                base.textWriter.Write("</ul>");
-                this._isHeaderClosed = true;
+                textWriter.Write("</ul>");
+                _isHeaderClosed = true;
             }
 
-            string tabId = this._tabIds.Dequeue();
-            if (tabId == _activeTabId)
+            var tabId = _tabIds.Dequeue();
+            if (_panelIndex == 1)
             {
-                base.textWriter.Write(@"<div class=""tab-content"">");
+                textWriter.Write(@"<div class=""tab-content"">");
                 _isFirstTab = false;
-                return new TabsPanel(base.textWriter, "div", tabId, true);
+                return new TabsPanel(textWriter, "div", tabId, _panelIndex == _activeTabIndex);
             }
 
-            return new TabsPanel(base.textWriter, "div", tabId);
+            return new TabsPanel(base.textWriter, "div", tabId, _panelIndex == _activeTabIndex);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -83,20 +84,16 @@ namespace TwitterBootstrapMVC.Controls
             if (_tabIds.Count > 0) throw new ArgumentNullException("BeginPanel", "The number of panels should be the same as the number of tabs.");
 
             // Close Tab Content Div:
-            base.textWriter.Write("</div>");
+            textWriter.Write("</div>");
             base.Dispose();
         }
 
         private void WriteTab(string label, string href, bool isActive)
         {
-            if (isActive)
-            {
-                base.textWriter.Write(string.Format(@"<li class=""active""><a data-toggle=""tab"" href=""#{1}"">{0}</a></li>", label, href));
-            }
-            else
-            {
-                base.textWriter.Write(string.Format(@"<li><a data-toggle=""tab"" href=""#{1}"">{0}</a></li>", label, href));
-            }
+            textWriter.Write(isActive
+                ? string.Format(@"<li class=""active""><a data-toggle=""tab"" href=""#{1}"">{0}</a></li>", label, href)
+                : string.Format(@"<li><a data-toggle=""tab"" href=""#{1}"">{0}</a></li>", label, href)
+            );
         }
     }
 }

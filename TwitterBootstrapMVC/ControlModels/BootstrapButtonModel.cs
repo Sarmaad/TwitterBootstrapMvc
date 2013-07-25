@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace TwitterBootstrapMVC.ControlModels
 {
@@ -29,5 +26,6 @@ namespace TwitterBootstrapMVC.ControlModels
         public string iconPrependCustomClass;
         public string iconAppendCustomClass;
         public bool isDropDownToggle;
+        public string loadingText;
     }
 }

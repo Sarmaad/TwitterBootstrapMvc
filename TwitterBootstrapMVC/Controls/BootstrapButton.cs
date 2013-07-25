@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using TwitterBootstrapMVC.ControlInterfaces;
 using TwitterBootstrapMVC.ControlModels;
@@ -32,19 +28,12 @@ namespace TwitterBootstrapMVC.Controls
             this._model.isDropDownToggle = true;
             return this;
         }
-
-        public BootstrapButton LoadingText(string loadingText)
-        {
-            this._loadingText = loadingText;
-            return this;
-        }
     }
 
     public class BootstrapButtonBase<T> : IBootstrapButton<T>
         where T : BootstrapButtonBase<T>
     {
         protected BootstrapButtonModel _model = new BootstrapButtonModel();
-        protected string _loadingText;
         protected bool _withCaret;
 
         public BootstrapButtonBase(string type)
@@ -110,6 +99,12 @@ namespace TwitterBootstrapMVC.Controls
             return (T)this;
         }
 
+        public T LoadingText(string loadingText)
+        {
+            this._model.loadingText = loadingText;
+            return (T)this;
+        }
+
         public T IconPrepend(Icons icon)
         {
             this._model.iconPrepend = icon;
@@ -157,7 +152,7 @@ namespace TwitterBootstrapMVC.Controls
         [EditorBrowsable(EditorBrowsableState.Never)]
         public virtual string ToHtmlString()
         {
-            TagBuilder input = new TagBuilder("button");
+            var input = new TagBuilder("button");
             input.Attributes.Add("type", _model.type);
             if (!string.IsNullOrEmpty(_model.name)) input.Attributes.Add("name", _model.name);
             if (!string.IsNullOrEmpty(_model.id)) input.Attributes.Add("id", _model.id);
@@ -177,7 +172,7 @@ namespace TwitterBootstrapMVC.Controls
                 input.AddOrMergeAttribute("disabled", "");
             }
 
-            if (!string.IsNullOrEmpty(_loadingText)) input.AddOrMergeAttribute("data-loading-text", _loadingText);
+            if (!string.IsNullOrEmpty(_model.loadingText)) input.AddOrMergeAttribute("data-loading-text", _model.loadingText);
             input.AddCssClass("btn");
 
             if (_withCaret)
@@ -188,8 +183,8 @@ namespace TwitterBootstrapMVC.Controls
 
             if (_model.iconPrepend != Icons._not_set || _model.iconAppend != Icons._not_set || !string.IsNullOrEmpty(_model.iconPrependCustomClass) || !string.IsNullOrEmpty(_model.iconAppendCustomClass))
             {
-                string iPrependString = string.Empty;
-                string iAppendString = string.Empty;
+                var iPrependString = string.Empty;
+                var iAppendString = string.Empty;
                 if (_model.iconPrepend != Icons._not_set) iPrependString = new BootstrapIcon(_model.iconPrepend, _model.iconPrependIsWhite).ToHtmlString();
                 if (_model.iconAppend != Icons._not_set) iAppendString = new BootstrapIcon(_model.iconAppend, _model.iconAppendIsWhite).ToHtmlString();
                 if (!string.IsNullOrEmpty(_model.iconPrependCustomClass))

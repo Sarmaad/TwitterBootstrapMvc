@@ -26,6 +26,7 @@ namespace TwitterBootstrapMVC.Renderers
 
             model.htmlAttributes.MergeHtmlAttributes(html.GetUnobtrusiveValidationAttributes(model.htmlFieldName, model.metadata));
             if (model.tooltipConfiguration != null) model.htmlAttributes.MergeHtmlAttributes(model.tooltipConfiguration.ToDictionary());
+            if (model.tooltip != null) model.htmlAttributes.MergeHtmlAttributes(model.tooltip.ToDictionary());
             if (!string.IsNullOrEmpty(model.id)) model.htmlAttributes.AddOrReplace("id", model.id);
             
             // assign size class
@@ -86,7 +87,7 @@ namespace TwitterBootstrapMVC.Renderers
                 validationMessage = new BootstrapHelpText(validation, model.validationMessageStyle).ToHtmlString();
             }
 
-            return MvcHtmlString.Create(string.Format(combinedHtml, input, validationMessage, helpText)).ToString();
+            return MvcHtmlString.Create(string.Format(combinedHtml, input, helpText, validationMessage)).ToString();
         }
     }
 }
